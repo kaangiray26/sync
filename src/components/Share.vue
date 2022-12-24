@@ -15,8 +15,14 @@
                         <span class="input-group-text bi bi-door-open-fill" id="basic-addon1"></span>
                         <input type="text" class="form-control" id="floatingInputGroup2" :value="peer_id" readonly>
                     </div>
-                    <div class="d-flex flex-column">
+                    <div class="d-flex flex-column mb-2">
                         <button class="btn btn-dark" @click="enterRoom">Create Room</button>
+                    </div>
+                    <hr />
+                    <div class="d-flex flex-column">
+                        <span class="fw-bold">Shhh, do you want to transfer a video?</span>
+                        <span class="fw-bold">Use <a class="text-decoration-none" href="https://file.pizza"
+                                target="_blank"><mark class="text-danger">file.pizza</mark></a>!</span>
                     </div>
                 </div>
             </div>

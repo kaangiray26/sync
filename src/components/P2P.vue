@@ -164,7 +164,7 @@ async function keyPress(event) {
     }
 
     if (event.key == 'ArrowLeft') {
-        let t = player.value.currentTime() + 10;
+        let t = player.value.currentTime() - 5;
         props.conn.send({
             type: "seek",
             value: t
@@ -174,7 +174,7 @@ async function keyPress(event) {
     }
 
     if (event.key == 'ArrowRight') {
-        let t = player.value.currentTime() - 10;
+        let t = player.value.currentTime() + 5;
         props.conn.send({
             type: "seek",
             value: t
@@ -201,7 +201,7 @@ onMounted(() => {
     player.value = videojs('#player', {
         controls: false,
         fill: true,
-        preload: "auto"
+        preload: "auto",
     });
 
     player.value.on('timeupdate', function () {
