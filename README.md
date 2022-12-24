@@ -1,10 +1,6 @@
 # sync
 P2P Synchronized Media Player
 
-<p>
-    <img src="/src/dist/favicon.svg" width="64" height="64">
-</p>
-
 ## Usage
 Using this web app, you can keep your video players in sync.  
 But both of you must have the same video file on your devices.
