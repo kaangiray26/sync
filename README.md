@@ -1,5 +1,5 @@
 # sync
-P2P Synchronized Media Player
+A P2P Synchronized Media Player
 
 ## Usage
 Using this web app, you can keep your video players in sync.  
