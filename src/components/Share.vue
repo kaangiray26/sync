@@ -2,7 +2,7 @@
     <div class="row h-100 w-100 gx-0 p-2 justify-content-center align-items-center">
         <div class="col-12 col-lg-6">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body position-relative">
                     <div class="d-flex align-items-center">
                         <img class="img-thumbnail img-fluid clickable m-2" src="/favicon.svg" width="64" height="64"
                             @click="reload">
@@ -23,6 +23,10 @@
                         <span class="fw-bold">Shhh, do you want to transfer a video?</span>
                         <span class="fw-bold">Use <a class="text-decoration-none" href="https://file.pizza"
                                 target="_blank"><mark class="text-danger">file.pizza</mark></a>!</span>
+                        <div class="d-flex justify-content-end">
+                            <a href="https://github.com/kaangiray26/sync"><button
+                                    class="btn btn-dark bi bi-github"></button></a>
+                        </div>
                     </div>
                 </div>
             </div>
