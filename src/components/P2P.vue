@@ -160,7 +160,27 @@ async function keyPress(event) {
     if (event.code == 'Space') {
         event.preventDefault();
         play_pause();
-        return;
+        return
+    }
+
+    if (event.key == 'ArrowLeft') {
+        let t = player.value.currentTime() + 10;
+        props.conn.send({
+            type: "seek",
+            value: t
+        });
+        player.value.currentTime(t);
+        return
+    }
+
+    if (event.key == 'ArrowRight') {
+        let t = player.value.currentTime() - 10;
+        props.conn.send({
+            type: "seek",
+            value: t
+        });
+        player.value.currentTime(t);
+        return
     }
 }
 
@@ -187,5 +207,8 @@ onMounted(() => {
     player.value.on('timeupdate', function () {
         get_progress();
     });
+
+    window.focus();
+    window.addEventListener('keydown', keyPress);
 })
 </script>
