@@ -1,4 +1,4 @@
-# ![](src/public/favicon.svg) sync
+# sync
 P2P Synchronized Media Player
 
 ## Usage
