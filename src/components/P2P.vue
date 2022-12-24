@@ -87,11 +87,12 @@ async function seekProgress(ev) {
     const x = ev.clientX - rect.left;
     const percent = x / rect.width;
 
-    player.value.currentTime(player.value.duration() * percent);
+    let t = player.value.duration() * percent;
     props.conn.send({
         type: "seek",
-        value: player.value.currentTime()
-    })
+        value: t
+    });
+    player.value.currentTime(t);
 }
 
 async function fullscreen() {
@@ -100,18 +101,18 @@ async function fullscreen() {
 
 async function play_pause() {
     if (is_playing.value) {
-        player.value.pause();
         props.conn.send({
             type: "pause"
         })
+        player.value.pause();
         is_playing.value = false;
         return;
     }
 
-    player.value.play();
     props.conn.send({
         type: "play"
     })
+    player.value.play();
     is_playing.value = true;
 }
 
@@ -186,10 +187,5 @@ onMounted(() => {
     player.value.on('timeupdate', function () {
         get_progress();
     });
-
-    // setInterval(get_progress, 1000);
-
-    // window.focus();
-    // window.addEventListener('keydown', keyPress);
 })
 </script>
