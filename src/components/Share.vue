@@ -37,11 +37,12 @@ async function reload() {
 }
 
 async function enterRoom() {
-    localStorage.setItem('peer', peer_id.value);
+    sessionStorage.setItem('peer', peer_id.value);
     router.push("/session/" + peer_id.value);
 }
 
 onMounted(() => {
+    sessionStorage.clear();
     peer_id.value = crypto.randomUUID();
 })
 </script>

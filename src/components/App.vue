@@ -5,4 +5,9 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue"
+
+onMounted(() => {
+    sessionStorage.clear();
+})
 </script>

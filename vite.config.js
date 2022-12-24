@@ -9,7 +9,6 @@ const path = require('path')
 export default defineConfig({
     root: path.resolve(__dirname, 'src'),
     server: {
-        port: 8000,
         hot: true,
     },
     plugins: [vue()],
@@ -18,7 +17,7 @@ export default defineConfig({
             '@': fileURLToPath(new URL('./src', import.meta.url)),
             '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
             'peerjs': path.resolve(__dirname, 'node_modules/peerjs'),
-            'videojs': path.resolve(__dirname, 'node_modules/video.js'),
+            'video.js': path.resolve(__dirname, 'node_modules/video.js'),
         }
     }
 })
