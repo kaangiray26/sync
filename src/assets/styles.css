@@ -1,0 +1,52 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css");
+
+html {
+    margin: 0;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    background-color: #2b2d42;
+}
+
+#app {
+    height: 100%;
+}
+
+img {
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.content-view {
+    flex: 1 1 auto;
+    overflow: scroll;
+}
+
+.under-view {
+    flex: 0 1;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.dropzone {
+    border-style: dashed;
+    border-width: 0.25rem;
+    border-color: black;
+}
+
+.progress {
+    height: 10px;
+}
+
+.invisible {
+    height: 0;
+    width: 0;
+}
