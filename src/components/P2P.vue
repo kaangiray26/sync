@@ -1,7 +1,8 @@
 <template>
     <div :class="{ 'visually-hidden': store.loaded != 2, 'd-flex h-100 w-100': store.loaded == 2 }">
-        <div class="h-100 w-100 position-relative" @mouseleave="controls = false" @mousemove="controls = true">
-            <video id="player" class="video-js" @click="play_pause"></video>
+        <div class="h-100 w-100 position-relative" @mouseleave="controls = false" @mousemove="controls = true"
+            @dragover.prevent="dragover" @dragleave.prevent="dragleave" @drop.prevent="drop">
+            <video id="player" class="video-js" @click="play_pause" crossorigin="anonymous"></video>
             <div class="w-100 d-flex bg-dark flex-fill flex-row align-items-center position-absolute bottom-0"
                 :class="{ 'invisible': !controls }">
                 <div class="btn-toolbar m-1" role="toolbar" aria-label="Toolbar with button groups">
@@ -22,6 +23,8 @@
                 </div>
                 <div class="btn-toolbar m-1" role="toolbar" aria-label="Toolbar with button groups">
                     <div class="btn-group" role="group" aria-label="First group">
+                        <button type="button" class="btn btn-sm btn-light bi bi-collection-play-fill"
+                            @click="upload"></button>
                         <button type="button" class="btn btn-sm btn-light bi bi-fullscreen" @click="fullscreen">
                         </button>
                     </div>
@@ -29,16 +32,20 @@
             </div>
         </div>
     </div>
+    <input ref="file_input" class="visually-hidden" type="file" @change="onUpload" />
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue"
 import { store } from "/js/store.js"
 import videojs from "video.js"
+import { handle_subtitle } from "/js/converter.js"
 
 const player = ref(null);
 const is_playing = ref(false);
 const controls = ref(false);
+
+const file_input = ref(null);
 
 const progress = ref(0);
 const remainingTime = ref(0);
@@ -55,12 +62,84 @@ function formatDuration(time) {
     return hours + ':' + minutes + ':' + seconds;
 }
 
-async function _loadMedia(file) {
+async function upload() {
+    file_input.value.click();
+}
+
+async function drop(ev) {
+    let f = ev.dataTransfer.files[0];
+    console.log(f.type);
+    if (f.type.startsWith("video")) {
+        changeMedia(f);
+    } else if (f.type == "text/vtt") {
+        addVTTSubtitle(f);
+    } else if (f.type == "application/x-subrip") {
+        addSRTSubtitle(f);
+    }
+}
+
+async function onUpload(ev) {
+    let f = ev.target.files[0];
+    console.log(f.type);
+    if (f.type.startsWith("video")) {
+        changeMedia(f);
+    } else if (f.type == "text/vtt") {
+        addVTTSubtitle(f);
+    } else if (f.type == "application/x-subrip") {
+        addSRTSubtitle(f);
+    }
+}
+
+async function addVTTSubtitle(f) {
+    let track = document.createElement("track");
+
+    track.kind = "captions";
+    track.src = URL.createObjectURL(f);
+    track.label = "English";
+    track.srclang = "en";
+    track.default = true;
+    document.getElementById("player_html5_api").appendChild(track);
+}
+
+async function addSRTSubtitle(f) {
+    let blob = await handle_subtitle(f);
+    let track = document.createElement("track");
+
+    track.kind = "captions";
+    track.src = URL.createObjectURL(blob);
+    track.label = "English";
+    track.srclang = "en";
+    track.default = true;
+    document.getElementById("player_html5_api").appendChild(track);
+}
+
+async function changeMedia(file) {
     let src = URL.createObjectURL(file);
+    let type = file.type;
 
     player.value.src({
         src: src,
-        type: file.type
+        type: type
+    });
+
+    props.conn.send({
+        type: "pause"
+    })
+
+    player.value.pause();
+    is_playing.value = false;
+    return;
+}
+
+async function _loadMedia(file) {
+    let src = URL.createObjectURL(file);
+    let type = file.type;
+
+    console.log(type);
+
+    player.value.src({
+        src: src,
+        type: type
     });
 
     store.loaded += 1;

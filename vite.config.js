@@ -18,6 +18,7 @@ export default defineConfig({
             '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
             'peerjs': path.resolve(__dirname, 'node_modules/peerjs'),
             'video.js': path.resolve(__dirname, 'node_modules/video.js'),
+            'subtitle': path.resolve(__dirname, 'node_modules/subtitle'),
         }
     }
 })
