@@ -1,5 +1,5 @@
 <template>
-    <div :class="{ 'visually-hidden': store.loaded != 2, 'd-flex h-100 w-100': store.loaded == 2 }">
+    <div class="player-container" v-show="store.loaded == 2">
         <div class="h-100 w-100 position-relative" @mouseleave="controls = false" @mousemove="controls = true"
             @dragover.prevent="dragover" @dragleave.prevent="dragleave" @drop.prevent="drop">
             <video id="player" class="video-js" @click="play_pause" crossorigin="anonymous"></video>
@@ -122,7 +122,7 @@ async function changeMedia(file) {
         type: type
     });
 
-    props.conn.send({
+    store.conn.send({
         type: "pause"
     })
 
@@ -143,7 +143,7 @@ async function _loadMedia(file) {
     });
 
     store.loaded += 1;
-    props.conn.send({
+    store.conn.send({
         type: "ready"
     })
 }
@@ -167,7 +167,7 @@ async function seekProgress(ev) {
     const percent = x / rect.width;
 
     let t = player.value.duration() * percent;
-    props.conn.send({
+    store.conn.send({
         type: "seek",
         value: t
     });
@@ -180,7 +180,7 @@ async function fullscreen() {
 
 async function play_pause() {
     if (is_playing.value) {
-        props.conn.send({
+        store.conn.send({
             type: "pause"
         })
         player.value.pause();
@@ -188,14 +188,14 @@ async function play_pause() {
         return;
     }
 
-    props.conn.send({
+    store.conn.send({
         type: "play"
     })
     player.value.play();
     is_playing.value = true;
 }
 
-props.conn.on("data", async function (data) {
+store.conn.on("data", async function (data) {
     console.log(data);
     if (data.type == "play") {
         player.value.play();
@@ -217,7 +217,7 @@ props.conn.on("data", async function (data) {
     if (data.type == "connected") {
         if (!store.connected) {
             store.connected = true;
-            props.conn.send({
+            store.conn.send({
                 type: "connected"
             })
             return;
@@ -230,7 +230,7 @@ props.conn.on("data", async function (data) {
     }
 });
 
-props.conn.on('close', () => {
+store.conn.on('close', () => {
     window.location.href = "/"
 });
 
@@ -244,7 +244,7 @@ async function keyPress(event) {
 
     if (event.key == 'ArrowLeft') {
         let t = player.value.currentTime() - 5;
-        props.conn.send({
+        store.conn.send({
             type: "seek",
             value: t
         });
@@ -254,7 +254,7 @@ async function keyPress(event) {
 
     if (event.key == 'ArrowRight') {
         let t = player.value.currentTime() + 5;
-        props.conn.send({
+        store.conn.send({
             type: "seek",
             value: t
         });
@@ -262,15 +262,6 @@ async function keyPress(event) {
         return
     }
 }
-
-const props = defineProps({
-    peer: {
-        type: Object,
-    },
-    conn: {
-        type: Object,
-    },
-})
 
 defineExpose({
     loadMedia: _loadMedia,

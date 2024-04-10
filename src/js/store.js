@@ -2,8 +2,10 @@
 
 import { reactive } from 'vue';
 const store = reactive({
-    connected: false,
+    peer: null,
+    conn: null,
     loaded: 0,
+    connected: false,
 });
 
 export { store }

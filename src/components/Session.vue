@@ -1,41 +1,33 @@
 <template>
-    <div class="under-view bg-dark">
-        <div class="d-flex justify-content-between p-1">
-            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="btn-group" role="group" aria-label="Basic example">
-                    <button class="btn btn-outline-light btn-sm bi bi-moon-stars-fill" @click="home"></button>
-                </div>
-            </div>
-            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="btn-group" role="group" aria-label="Basic example">
-                    <button class="btn btn-sm bi bi-plugin disabled"
-                        :class="{ 'btn-danger': !store.connected, 'btn-success': store.connected }"></button>
-                    <button class="btn btn-outline-light btn-sm" @click="copyToClipboard">Share</button>
-                </div>
-            </div>
+    <div class="under-view">
+        <div class="d-flex flex-fill justify-content-between p-1">
+            <button class="btn" @click="home">
+                <span class="bi bi-moon-stars-fill text-light"></span>
+            </button>
+            <button class="btn d-flex text-light" @click="copyToClipboard">
+                <span class="bi bi-clipboard me-1"></span>
+                <span>Share</span>
+            </button>
         </div>
     </div>
-    <div class="content-view">
-        <div v-show="!store.connected">
-            <div class="d-flex flex-column justify-content-center align-items-center mt-4">
-                <div class="spinner-border text-light" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <span class="fw-bold text-white">
-                    Waiting for the connection...
-                </span>
+    <div v-if="!dropped" class="content-view">
+        <div v-if="!store.connected" class="loading">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
             </div>
+            <span class="fw-bold">
+                Waiting for the connection...
+            </span>
         </div>
-        <div v-if="(store.connected && !dropped)"
-            class="d-flex justify-content-center align-items-center h-100 w-100 clickable dropzone bg-light"
-            @dragover.prevent="dragover" @dragleave.prevent="dragleave" @drop.prevent="drop" @click="upload">
+        <div v-if="(store.connected && !dropped)" class="dropzone" @dragover.prevent="dragover"
+            @dragleave.prevent="dragleave" @drop.prevent="drop" @click="upload">
             <div>
                 <span class="text-muted">Drop your file or click here to play.</span>
             </div>
         </div>
-        <P2P ref="p2p" v-if="peer_init" :key="peer_key" :peer="peer" :conn="conn" />
-        <input ref="file_input" class="visually-hidden" type="file" @change="onUpload" />
     </div>
+    <P2P ref="p2p" v-if="peer_init" :key="peer_key" />
+    <input ref="file_input" class="visually-hidden" type="file" @change="onUpload" />
 </template>
 
 <script setup>
@@ -56,6 +48,22 @@ const conn = ref(null);
 const peer_id = ref(null);
 const peer_key = ref(0);
 const peer_init = ref(false);
+
+// PeerJS
+const peerConfig = {
+    iceServers: [
+        {
+            urls: "turn:standard.relay.metered.ca:80",
+            username: "90e794d7186335533be6a215",
+            credential: "05ker3YuARTJkdfP",
+        },
+        {
+            urls: "turn:standard.relay.metered.ca:443",
+            username: "90e794d7186335533be6a215",
+            credential: "05ker3YuARTJkdfP",
+        },
+    ]
+}
 
 async function home() {
     window.location.href = "/";
@@ -83,30 +91,37 @@ async function copyToClipboard() {
 }
 
 onMounted(() => {
+    // Check if the session is valid
     if (!router.currentRoute.value.params.hasOwnProperty('id')) {
         router.push("/")
         return
     }
 
-    let id = sessionStorage.getItem('peer');
+    // Get ID
+    const id = sessionStorage.getItem('id');
+
+    // Role: Host
     if (id && (id == router.currentRoute.value.params.id)) {
-        peer_id.value = id;
-        peer.value = new Peer([peer_id.value]);
-        peer.value.on('connection', connection => {
-            conn.value = connection;
+        // Init peer
+        store.peer = new Peer([id], {
+            config: peerConfig
+        });
+        store.peer.on('connection', connection => {
+            store.conn = connection;
             peer_init.value = true;
         });
         return
     }
 
-    peer_id.value = crypto.randomUUID();
-    peer.value = new Peer([peer_id.value]);
+    store.peer = new Peer({
+        config: peerConfig
+    });
 
-    peer.value.on('open', () => {
-        conn.value = peer.value.connect(router.currentRoute.value.params.id);
+    store.peer.on('open', () => {
+        store.conn = store.peer.connect(router.currentRoute.value.params.id);
         peer_init.value = true;
-        conn.value.on("open", () => {
-            conn.value.send({
+        store.conn.on("open", () => {
+            store.conn.send({
                 type: 'connected'
             });
         });

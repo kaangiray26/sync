@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex flex-column vh-100 vw-100 m-0 p-0">
+    <div class="container py-4">
         <router-view />
     </div>
 </template>
